@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
+
 import styled from "@emotion/styled";
-import { obtenerDiferenciaYear } from "../helper";
+import { obtenerDiferenciaYear, calcularMarca, obtenerPlan } from "../helper";
 
 const Campo = styled.div`
   display: flex;
@@ -50,7 +52,7 @@ const Error = styled.div`
   margin-bottom: 2rem;
 `;
 
-const Formulario = () => {
+const Formulario = ({ guardarResumen, guardarCargando }) => {
   const [datos, guardarDatos] = useState({
     marca: "",
     year: "",
@@ -89,6 +91,12 @@ const Formulario = () => {
     const diferencia = obtenerDiferenciaYear(year);
     resultado -= (diferencia * 3 * resultado) / 100;
 
+    resultado = calcularMarca(marca) * resultado;
+
+    const incrementoPlan = obtenerPlan(plan);
+    console.log(incrementoPlan);
+
+    resultado = parseFloat(incrementoPlan * resultado).toFixed();
     console.log(resultado);
     //por cada año hay que restar 3%
 
@@ -100,6 +108,14 @@ const Formulario = () => {
     //completo 50%
 
     //total
+    guardarCargando(true);
+    setTimeout(() => {
+      guardarCargando(false);
+      guardarResumen({
+        cotizacion: Number(resultado),
+        datos
+      });
+    }, 3000);
   };
 
   return (
@@ -155,4 +171,14 @@ const Formulario = () => {
   );
 };
 
+Formulario.propTypes = {
+  guardarResumen: PropTypes.func.isRequired,
+  guardarCargando: PropTypes.func.isRequired
+};
+
 export default Formulario;
+
+//instalar redux - devtools en el navegador de chrome
+
+//npm install--save redux-- -> redux
+//npm install--save react - redux-- > libreria para vincular react con redux
